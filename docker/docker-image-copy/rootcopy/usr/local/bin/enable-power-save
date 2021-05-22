@@ -1,0 +1,10 @@
+#!/bin/bash
+set -x
+
+echo Turn ON USB chip
+echo '1-1' | sudo tee /sys/bus/usb/drivers/usb/bind
+
+echo Turn ON HDMI output
+sudo /opt/vc/bin/tvservice -p
+
+echo powersave | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor

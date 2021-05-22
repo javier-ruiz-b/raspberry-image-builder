@@ -1,0 +1,9 @@
+#!/bin/bash
+set -eu
+module="/src/modules/$1"
+if [ ! -d "$module" ]; then
+    echo "Error: module $module not found" >&2
+    exit 1
+fi
+
+cp -r "$module/"* /mnt/root

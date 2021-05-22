@@ -1,0 +1,10 @@
+[Unit]
+Description=Stream Camera over TCP 5000
+After=network-online.target openvpn@vlc-debian.service openvpn@vlc.service
+
+[Service]
+Restart=always
+ExecStart=/usr/local/bin/stream-camera.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Pilight Watchdog
+After=pilight.service
+
+[Service]
+Restart=always
+ExecStart=/usr/local/bin/pilight-watchdog.sh
+
+[Install]
+WantedBy=multi-user.target

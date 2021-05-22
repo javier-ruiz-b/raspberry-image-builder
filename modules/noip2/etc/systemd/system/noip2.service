@@ -1,0 +1,11 @@
+[Unit]
+Description=no-ip
+After=network-online.target
+
+[Service]
+Type=forking
+Restart=always
+ExecStart=/usr/local/bin/noip2
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,5 @@
+#!/bin/bash
+set -euo pipefail
+LOGFILE=/var/log/borgbackup.log
+
+borgbackup 2>&1 | tee --append $LOGFILE

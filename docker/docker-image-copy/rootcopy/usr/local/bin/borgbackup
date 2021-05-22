@@ -1,0 +1,58 @@
+#!/bin/bash
+set -euo pipefail
+
+info() { printf "\n%s %s\n\n" "$( date )" "$*" >&2; }
+
+export BORG_PASSCOMMAND='cat /etc/password'
+export BORG_REPO=/opt/raspizero-sync/borgbackup
+# borg init -e=repokey $BORG_REPO
+
+perform_backup() {
+    BACKUP_NAME=$1
+    BACKUP_SOURCE="$2"
+    shift; shift
+    EXTRA_ARGS="$*"
+    info "Starting backup $BACKUP_NAME"
+
+    borg create \
+        --verbose                       \
+        --one-file-system               \
+        --filter AME                    \
+        --stats                         \
+        --show-rc                       \
+        --compression lz4               \
+        --exclude-caches                \
+        $EXTRA_ARGS                     \
+        $BORG_REPO::"$BACKUP_NAME-$(date -Iminutes)" \
+        "$BACKUP_SOURCE"
+}
+
+prune() {
+    BACKUP_NAME="$1"
+    shift
+
+    info "Pruning repository $BACKUP_NAME"
+    borg prune \
+        --list                          \
+        --prefix "$BACKUP_NAME-"        \
+        --show-rc "$@"                  \
+        $BORG_REPO
+}
+
+
+perform_backup raspizero-root "/" \
+        --exclude '/media' \
+        --exclude '/mnt' \
+        --exclude '.cache' \
+        --exclude '/var' \
+        --exclude '/lib' \
+        --exclude '/usr' \
+        --include '/usr/local' \
+        --exclude '/proc' \
+        --exclude '/tmp' \
+        --exclude '/home/pi/workspace'
+prune raspizero-root \
+        --keep-weekly    2              \
+        --keep-monthly   3
+
+#chown -R syncthing:syncthing /media/usb-backup/*borgbackup
