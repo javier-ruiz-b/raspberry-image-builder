@@ -3,8 +3,10 @@ set -euxo pipefail
 
 export DEBIAN_FRONTEND=noninteractive
 
-for script in /build.d/*; do
+mkdir -p /build.d/done
+for script in /build.d/*.sh; do
     bash -euxo pipefail "$script"
+    mv $script /build.d/done
 done
 echo "df -h:"
 df -h

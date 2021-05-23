@@ -15,5 +15,4 @@ apt-get install -yq --no-install-recommends \
     python3-pip \
     saidar \
     syncthing \
-    vis \
-    watchdog
+    vis
