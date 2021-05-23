@@ -25,8 +25,8 @@ rm -rf $DESTDIR/*
 tmpdir=$(mktemp -d)
 
 cd $tmpdir
-# git clone --depth 1 --branch release/4.4 git://source.ffmpeg.org/ffmpeg.git
-tar xfz /src/ffmpeg.tgz
+git clone --depth 1 --branch release/4.4 git://source.ffmpeg.org/ffmpeg.git
+# tar xfz /src/ffmpeg.tgz
 cd ffmpeg
 
 git clone https://github.com/mirror/x264.git

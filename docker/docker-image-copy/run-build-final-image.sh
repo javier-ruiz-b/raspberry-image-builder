@@ -8,41 +8,18 @@ if [ ! -f "$config_file" ]; then
     ls -1 "$configs_dir"
     exit 0
 fi
+base_img="base.img"
+if [ ! -f $base_img ]; then
+    bash /build-basis-image.sh $base_img || bash
+fi
 
-bash /decompress-image.sh
+cp $base_img result.img
+bash /mount.sh result.img
 
-qemu-img resize *raspios*.img -f raw +2G
-parted *raspios*.img resizepart 2 100%
-
-losetup -D
-
-root_part_start=$(fdisk -l *raspios*.img | grep '\.img2' | awk '{print $2}')
-root_dev=$(losetup -f --offset $((root_part_start*512)) --show *raspios*.img)
-e2fsck -f $root_dev
-resize2fs $root_dev
-
-losetup -D
-
-bash /mount.sh
-
-cp -r /rootcopy/* /mnt/root/
-
-chmod +x /bin/*
 bash -eux "$config_file"
 cp -r "$config_dir"/* /mnt/root/
 
-cd /mnt/root/
-tar xfz /src/cross-compile-output/contents.tgz || ( echo "Run cross compile before."; exit 1)
-
-chroot /mnt/root/ bash /var/tmp/setup.sh || (
-    echo "Error: build failed, opening shell:"
-    chroot /mnt/root/ bash
-)
-
-umount /mnt/root/boot
-umount -l /mnt/root || true
-sync
-
+bash /umount.sh result.img
 # bash
 
-cp /*raspios*.img /src
+# cp /*raspios*.img /src
