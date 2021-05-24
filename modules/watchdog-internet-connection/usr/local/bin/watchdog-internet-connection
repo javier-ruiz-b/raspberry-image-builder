@@ -1,15 +1,22 @@
-#!/bin/dash
+#!/bin/bash
 set -eu
-trap 'echo "V" >> /dev/watchdog; echo disabled watchdog' EXIT
+trap 'exit 1' INT QUIT HUP TERM ALRM USR1
+trap 'cleanup' EXIT
+cleanup() {
+    echo "V" >> /dev/watchdog
+    echo  Disabled watchdog
+    wall -n Disabled watchdog
+}
 
-sleep_time=6
-retries=5
+sleep_time=7
+retries=30
 current_retry=0
 
 ping_test() {
-    if ! ping -c 1 -W 2 1.1.1.1; then
-        if ! ping -c 1 -W 2 8.8.8.8; then
-            echo "Could not ping 8.8.8.8 or 1.1.1.1"
+    gateway_ip=$(ip r l | grep 'default via ' | cut -d' ' -f3)
+    if [ "$gateway_ip" = "" ] || ! ping -c 1 -W 2 "$gateway_ip" > /dev/null 2>&1; then
+        if ! ping -c 1 -W 2 1.1.1.1 > /dev/null 2>&1; then
+            echo "Could not ping $gateway_ip or 1.1.1.1"
             return 1
         fi
     fi
@@ -18,7 +25,7 @@ ping_test() {
 
 load_ok() {
     load_1=$(cut -d' ' -f1 < /proc/loadavg)
-    load_comparison="$load_1 > 20"
+    load_comparison="$load_1 > 40"
     if [ "$(echo "$load_comparison" | bc -l)" = "1" ]; then
         echo "Load too high: $load_comparison"
         return 1
@@ -33,11 +40,11 @@ while true; do
         test $current_retry -eq $retries && wall -n "Warning: watchdog not triggered! System will restart in 15s." || true
     fi
 
-    if ping_test; then
+    if ping_test && load_ok; then
         current_retry=0
         sleep $sleep_time
     else
         current_retry=$((current_retry+1))
-        sleep $((sleep_time/3))
+        sleep 1s
     fi
 done

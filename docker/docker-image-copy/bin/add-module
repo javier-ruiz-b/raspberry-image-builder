@@ -9,4 +9,4 @@ for module in $@; do
     fi
     cp -r "$module/"* $MOUNT_POINT
 done
-chroot "$MOUNT_POINT" sh -c 'chmod 755 /usr/bin/* /usr/sbin/*'
+chroot "$MOUNT_POINT" sh -c 'chmod 755 /usr/local/bin/*'

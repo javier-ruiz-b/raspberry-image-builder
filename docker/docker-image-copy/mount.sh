@@ -3,6 +3,7 @@ set -euxo pipefail
 mountpoint="$1"
 image="$2"
 
+echo "Mounting $image"
 losetup -D
 
 boot_part_start=$(fdisk -l "$image" | grep '\.img1' | awk '{print $2}')

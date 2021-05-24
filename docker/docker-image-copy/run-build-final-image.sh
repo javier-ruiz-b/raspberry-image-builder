@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 chmod +x /*.sh
 
 export MOUNT_POINT=/mnt/root
@@ -17,6 +17,7 @@ if [ ! -f $base_img ]; then
     /build-basis-image.sh $base_img
 fi
 
+echo "Copying image"
 cp $base_img result.img
 /mount.sh $MOUNT_POINT result.img
 
@@ -29,3 +30,4 @@ chroot $MOUNT_POINT bash -eu /var/tmp/setup.sh || (
 )
 
 /umount.sh $MOUNT_POINT
+echo "Success"

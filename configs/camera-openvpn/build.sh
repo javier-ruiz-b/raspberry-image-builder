@@ -1,4 +1,7 @@
 #!/bin/bash
 add-module \
-    teamviewer \
-    openvpn
+    openvpn \
+    overlayfs \
+    syncthing \
+    tmate \
+    watchdog-internet-connection

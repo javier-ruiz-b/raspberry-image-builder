@@ -1,0 +1,12 @@
+[Unit]
+Description=tmate remote control session
+After=network-online.target
+
+[Service]
+Restart=always
+ExecStart=/usr/local/bin/tmate -F
+User=pi
+Group=users
+
+[Install]
+WantedBy=multi-user.target

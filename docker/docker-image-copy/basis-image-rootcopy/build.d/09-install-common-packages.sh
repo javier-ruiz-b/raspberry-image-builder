@@ -13,5 +13,4 @@ apt-get install -yq --no-install-recommends \
     tmux \
     python3-pip \
     saidar \
-    syncthing \
     vis

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ "$(whoami)" = "root" ]; then
+    echo "Do not run as root."
+    exit 1
+fi
+
+echo "Set up tmate"
+echo "Go to https://tmate.io/ and obtain an API key"
+read -p "API key: " apikey
+read -p "Session name: " session_name
+echo "Allowing only clients with key in ~/.ssh/authorized_keys"
+
+cat << EOF > ~/.tmate.conf
+set tmate-api-key $apikey
+set tmate-session-name $session_name
+set tmate-authorized-keys "~/.ssh/authorized_keys"
+EOF
+
+echo "Accessible through ssh username/$session_name@nyc1.tmate.io"
+
+systemctl enable tmate-session
+systemctl restart tmate-session

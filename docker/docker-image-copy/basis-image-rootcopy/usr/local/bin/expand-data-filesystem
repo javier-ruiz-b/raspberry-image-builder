@@ -11,12 +11,16 @@ device=$(grep '/data' /proc/mounts | cut -d' ' -f1)
 umount $device
 
 echo "Checking $device"
-e2fsck -f $device
+echo yes | e2fsck -y -f $device
 
 disk=$(echo $device | sed -rn 's/(.*[0-9])p[0-9]$/\1/p')
 number=$(echo $device | sed -rn 's/.*([0-9])$/\1/p')
+
+ROOT_DEV_SIZE=$(cat "/sys/block/$(basename $disk)/size")
+TARGET_END=$((ROOT_DEV_SIZE - 1))
+
 echo "Resizing partition number $number of $disk"
-echo "- +" | sudo sfdisk -N "$number" "$disk"
+parted -m "$disk" u s resizepart "$number" "$TARGET_END"
 
 echo "Updating partition probe"
 partprobe
