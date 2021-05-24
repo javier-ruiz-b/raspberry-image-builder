@@ -1,9 +1,12 @@
 #!/bin/bash
 set -eu
-module="/src/modules/$1"
-if [ ! -d "$module" ]; then
-    echo "Error: module $module not found" >&2
-    exit 1
-fi
 
-cp -r "$module/"* /mnt/root
+for module in $@; do
+    module="/src/modules/$1"
+    if [ ! -d "$module" ]; then
+        echo "Error: module $module not found" >&2
+        exit 1
+    fi
+    cp -r "$module/"* $MOUNT_POINT
+done
+chroot "$MOUNT_POINT" sh -c 'chmod 755 /usr/bin/* /usr/sbin/*'

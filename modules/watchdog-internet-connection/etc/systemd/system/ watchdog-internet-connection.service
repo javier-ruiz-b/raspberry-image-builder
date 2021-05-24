@@ -1,0 +1,10 @@
+[Unit]
+Description=Trigger watchdog with internet connection
+After=network-online.target
+
+[Service]
+Restart=always
+ExecStart=/usr/local/bin/watchdog-internet-connection
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,43 @@
+#!/bin/dash
+set -eu
+trap 'echo "V" >> /dev/watchdog; echo disabled watchdog' EXIT
+
+sleep_time=6
+retries=5
+current_retry=0
+
+ping_test() {
+    if ! ping -c 1 -W 2 1.1.1.1; then
+        if ! ping -c 1 -W 2 8.8.8.8; then
+            echo "Could not ping 8.8.8.8 or 1.1.1.1"
+            return 1
+        fi
+    fi
+    return 0
+}
+
+load_ok() {
+    load_1=$(cut -d' ' -f1 < /proc/loadavg)
+    load_comparison="$load_1 > 20"
+    if [ "$(echo "$load_comparison" | bc -l)" = "1" ]; then
+        echo "Load too high: $load_comparison"
+        return 1
+    fi
+    return 0
+}
+
+while true; do
+    if test $current_retry -lt $retries; then
+        echo '.' >> /dev/watchdog
+    else
+        test $current_retry -eq $retries && wall -n "Warning: watchdog not triggered! System will restart in 15s." || true
+    fi
+
+    if ping_test; then
+        current_retry=0
+        sleep $sleep_time
+    else
+        current_retry=$((current_retry+1))
+        sleep $((sleep_time/3))
+    fi
+done

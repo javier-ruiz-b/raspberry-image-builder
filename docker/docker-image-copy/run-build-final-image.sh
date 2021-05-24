@@ -1,5 +1,8 @@
 #!/bin/bash
 set -euxo pipefail
+chmod +x /*.sh
+
+export MOUNT_POINT=/mnt/root
 configs_dir="/src/configs"
 config_dir="$configs_dir/${1:-}"
 config_file="$config_dir/build.sh"
@@ -8,18 +11,21 @@ if [ ! -f "$config_file" ]; then
     ls -1 "$configs_dir"
     exit 0
 fi
+
 base_img="base.img"
 if [ ! -f $base_img ]; then
-    bash /build-basis-image.sh $base_img || bash
+    /build-basis-image.sh $base_img
 fi
 
 cp $base_img result.img
-bash /mount.sh result.img
+/mount.sh $MOUNT_POINT result.img
 
 bash -eux "$config_file"
-cp -r "$config_dir"/* /mnt/root/
+cp -r "$config_dir"/* $MOUNT_POINT
 
-bash /umount.sh result.img
-# bash
+chroot $MOUNT_POINT bash -eu /var/tmp/setup.sh || (
+    echo "Error: build failed, opening shell:"
+    chroot $MOUNT_POINT bash
+)
 
-# cp /*raspios*.img /src
+/umount.sh $MOUNT_POINT

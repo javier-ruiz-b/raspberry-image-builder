@@ -1,0 +1,31 @@
+#!/bin/bash
+set -euo pipefail
+
+echo "Waiting for /data"
+while ! grep '/data' /proc/mounts; do
+    sleep 5s
+done
+
+echo "Unmounting /data"
+device=$(grep '/data' /proc/mounts | cut -d' ' -f1)
+umount $device
+
+echo "Checking $device"
+e2fsck -f $device
+
+disk=$(echo $device | sed -rn 's/(.*[0-9])p[0-9]$/\1/p')
+number=$(echo $device | sed -rn 's/.*([0-9])$/\1/p')
+echo "Resizing partition number $number of $disk"
+echo "- +" | sudo sfdisk -N "$number" "$disk"
+
+echo "Updating partition probe"
+partprobe
+
+echo "Resizing $device"
+resize2fs $device
+
+echo "Success. Disabling service"
+systemctl disable expand-data-filesystem
+
+echo "Mounting /data back"
+mount -a

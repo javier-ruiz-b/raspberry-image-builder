@@ -2,6 +2,8 @@
 set -euxo pipefail
 
 result_image="$1"
+MOUNT_POINT=/mnt/root
+
 tmp_image="$result_image"tmp.img
 
 rm -rf *raspios*.img $result_image $tmp_image
@@ -36,18 +38,19 @@ e2fsck -f $data_dev
 resize2fs $data_dev
 e2label $data_dev data
 
-bash /mount.sh /mnt/root/ "$tmp_image"
+/mount.sh $MOUNT_POINT "$tmp_image"
 
-cp -r /basis-image-rootcopy/* /mnt/root/
+cp -r /basis-image-rootcopy/* $MOUNT_POINT
 
 chmod +x /bin/*
-cd /mnt/root/
+cd $MOUNT_POINT
 tar xfz /src/cross-compile-output/contents.tgz || ( echo "Run cross compile before."; exit 1)
 
-chroot /mnt/root/ bash /var/tmp/setup.sh || (
+chroot $MOUNT_POINT bash /var/tmp/setup.sh || (
     echo "Error: build failed, opening shell:"
-    chroot /mnt/root/ bash
+    chroot $MOUNT_POINT bash
 )
 
-bash /umount.sh "$tmp_image"
+cd /src
+/umount.sh $MOUNT_POINT
 mv $tmp_image $result_image

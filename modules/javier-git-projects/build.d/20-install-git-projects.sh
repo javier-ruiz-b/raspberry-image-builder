@@ -7,6 +7,7 @@ mkdir workspace
 apt-get install -yq \
     clang \
     cmake \
+    make \
     ninja-build \
     qtbase5-dev \
     qtchooser

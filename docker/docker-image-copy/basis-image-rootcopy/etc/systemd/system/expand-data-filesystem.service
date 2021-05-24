@@ -1,0 +1,13 @@
+[Unit]
+Description=Expand data filesystem
+After=data.mount
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/usr/local/bin/expand-data-filesystem
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=multi-user.target
