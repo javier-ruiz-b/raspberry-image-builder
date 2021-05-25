@@ -1,0 +1,43 @@
+#!/bin/bash
+set -euo pipefail
+# based on https://www.ckn.io/blog/2017/11/14/wireguard-vpn-typical-setup/
+
+cd /etc/wireguard
+
+read -e -p "Enter interface name: " -i "wg0" interface
+file=$interface.cfg
+if [ ! -f $file ]; then
+    cp client.conf.in "$file"
+fi
+
+ask_change_value() {
+    entry="$1"
+    prompt_text="$2"
+
+    value=$(grep "^$entry =" "$file" | cut -d' ' -f3-)
+    read -e -p "$prompt_text: " -i "$value" value
+    sed -i "s#^$entry.*#$entry = $value#g" "$file"
+}
+
+ask_change_value "Address" "Enter local address"
+
+private_key=$(cat my_privatekey)
+sed -i "s#^PrivateKey.*#PrivateKey = $private_key#g" "$file"
+
+ask_change_value "DNS" "Enter DNS (usually local server IP)"
+ask_change_value "PublicKey" "Enter server\'s public key"
+ask_change_value "Endpoint" "Enter server\'s address:port"
+ask_change_value "AllowedIPs" "Enter allowed IPs filter (or leave 0.0.0.0/0)"
+ask_change_value "PersistentKeepalive" "Send alive packet every x seconds (for NATs and firewalls)"
+
+chown root:root "$file"
+chmod 600 "$file"
+
+read -e -p "Do you want to activate the client now? " -i "Y" reply
+if [[ $reply =~ ^[Nn]$ ]]; then
+    exit 0
+fi
+
+# wg-quick up "$interface"
+systemctl start "wg-quick@$interface.service"
+systemctl enable "wg-quick@$interface.service"

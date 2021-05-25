@@ -1,0 +1,5 @@
+[Interface]
+Address = 10.1.1.1/24
+SaveConfig = true
+PrivateKey = <insert server_private_key>
+ListenPort = 59724

@@ -1,8 +1,8 @@
 #!/bin/bash
 set -eu
 
-for module in $@; do
-    module="/src/modules/$1"
+for module in "$@"; do
+    module="/src/modules/$module"
     if [ ! -d "$module" ]; then
         echo "Error: module $module not found" >&2
         exit 1

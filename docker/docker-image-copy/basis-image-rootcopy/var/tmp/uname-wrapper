@@ -1,0 +1,8 @@
+#!/bin/dash
+
+case "$1" in
+-r|--release)
+    basename "$(ls -1 /lib/modules/ | grep '[^v][0-9]+\+$')" ;;
+-m|--machine)
+    echo "armhf" ;;
+esac

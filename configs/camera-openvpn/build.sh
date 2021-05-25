@@ -1,7 +1,7 @@
 #!/bin/bash
 add-module \
-    openvpn \
     overlayfs \
     syncthing \
     tmate \
-    watchdog-internet-connection
+    watchdog-internet-connection \
+    wireguard

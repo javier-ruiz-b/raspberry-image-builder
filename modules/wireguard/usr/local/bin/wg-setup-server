@@ -1,0 +1,56 @@
+#!/bin/bash
+set -euo pipefail
+# based on https://www.ckn.io/blog/2017/11/14/wireguard-vpn-typical-setup/
+
+cd /etc/wireguard
+
+read -e -p "Enter interface name: " -i "wg0" interface
+file=$interface.cfg
+if [ ! -f $file ]; then
+    cp server.conf.in "$file"
+fi
+
+ask_change_value() {
+    entry="$1"
+    prompt_text="$2"
+
+    value=$(grep "^$entry =" "$file" | cut -d' ' -f3-)
+    read -e -p "$prompt_text: " -i "$value" value
+    sed -i "s#^$entry.*#$entry = $value#g" "$file"
+}
+
+private_key=$(cat my_privatekey)
+sed -i "s#^PrivateKey.*#PrivateKey = $private_key#g" "$file"
+
+ask_change_value "Address" "Enter server local address"
+ask_change_value "ListenPort" "Enter listening port"
+
+for i in $(seq 1 100); do
+    read -e -p "Do you want to add another client? " -i "N" reply
+    if [[ $reply =~ ^[Nn]$ ]]; then
+       break
+    fi
+
+    read -e -p "Enter client $i public key: " -i "" public_key
+
+    suggested_ip="$(echo "$address" | awk -F. '{print $1"."$2"."$3"."}')$((i+1))"
+    read -e -p "Enter client $i IP: " -i "$suggested_ip" client_ip
+    
+    {
+        echo -e "\n[Peer]"
+        echo "PublicKey = $public_key"
+        echo "AllowedIPs = $client_ip/32"
+    } >> "$file"
+done
+
+chown root:root "$file"
+chmod 600 "$file"
+
+read -e -p "Do you want to activate the server now? " -i "Y" reply
+if [[ $reply =~ ^[Nn]$ ]]; then
+    exit 0
+fi
+
+# wg-quick up "$interface"
+systemctl start "wg-quick@$interface.service"
+systemctl enable "wg-quick@$interface.service"
