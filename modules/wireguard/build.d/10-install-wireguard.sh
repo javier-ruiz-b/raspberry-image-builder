@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+if [ -d /etc/wireguard ]; then
+    echo "wireguard already installed."
+    exit 0
+fi 
+
 cd /tmp
 git clone https://git.zx2c4.com/wireguard-tools
 make -C wireguard-tools/src -j$(nproc)

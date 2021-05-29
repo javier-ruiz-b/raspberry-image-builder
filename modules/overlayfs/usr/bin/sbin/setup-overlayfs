@@ -1,0 +1,11 @@
+#!/bin/bash
+set -euxo pipefail
+
+update-initramfs -c -k $(uname -r)
+
+cat <<EOF >> /boot/cmdline.txt
+initramfs initrd7.img
+EOF
+
+sed -i '/s/ boot=overlay//g' /boot/cmdline.txt
+sed -i '/s/ root=/boot=overlay root=/g' /boot/cmdline.txt

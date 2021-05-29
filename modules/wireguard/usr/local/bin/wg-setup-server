@@ -5,7 +5,7 @@ set -euo pipefail
 cd /etc/wireguard
 
 read -e -p "Enter interface name: " -i "wg0" interface
-file=$interface.cfg
+file=$interface.conf
 if [ ! -f $file ]; then
     cp server.conf.in "$file"
 fi
@@ -33,6 +33,7 @@ for i in $(seq 1 100); do
 
     read -e -p "Enter client $i public key: " -i "" public_key
 
+    address=$(grep "^Address =" "$file" | cut -d' ' -f3-)
     suggested_ip="$(echo "$address" | awk -F. '{print $1"."$2"."$3"."}')$((i+1))"
     read -e -p "Enter client $i IP: " -i "$suggested_ip" client_ip
     

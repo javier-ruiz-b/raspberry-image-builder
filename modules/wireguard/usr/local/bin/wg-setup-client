@@ -5,7 +5,7 @@ set -euo pipefail
 cd /etc/wireguard
 
 read -e -p "Enter interface name: " -i "wg0" interface
-file=$interface.cfg
+file=$interface.conf
 if [ ! -f $file ]; then
     cp client.conf.in "$file"
 fi
