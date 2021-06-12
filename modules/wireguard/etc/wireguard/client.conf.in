@@ -1,10 +1,9 @@
 [Interface]
 Address = 10.1.1.2/32
 PrivateKey = <insert client_private_key>
-DNS = 10.1.1.1
 
 [Peer]
 PublicKey = <insert server_public_key>
 Endpoint = <insert vpn_server_address>:59724
-AllowedIPs = 0.0.0.0/0
+AllowedIPs = 10.1.1.0/24
 PersistentKeepalive = 0

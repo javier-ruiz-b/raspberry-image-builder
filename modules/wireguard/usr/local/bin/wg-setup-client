@@ -16,7 +16,11 @@ ask_change_value() {
 
     value=$(grep "^$entry =" "$file" | cut -d' ' -f3-)
     read -e -p "$prompt_text: " -i "$value" value
-    sed -i "s#^$entry.*#$entry = $value#g" "$file"
+    if [ "${value:-}" = "" ]; then
+        sed -i "/^$entry/d" "$file"
+    else
+        sed -i "s#^$entry.*#$entry = $value#g" "$file"
+    fi
 }
 
 ask_change_value "Address" "Enter local address"
@@ -24,7 +28,7 @@ ask_change_value "Address" "Enter local address"
 private_key=$(cat my_privatekey)
 sed -i "s#^PrivateKey.*#PrivateKey = $private_key#g" "$file"
 
-ask_change_value "DNS" "Enter DNS (usually local server IP)"
+ask_change_value "DNS" "Enter DNS. Leave empty if you don't want to set one."
 ask_change_value "PublicKey" "Enter server\'s public key"
 ask_change_value "Endpoint" "Enter server\'s address:port"
 ask_change_value "AllowedIPs" "Enter allowed IPs filter (or leave 0.0.0.0/0)"

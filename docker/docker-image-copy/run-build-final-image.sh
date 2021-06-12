@@ -1,6 +1,8 @@
 #!/bin/bash
-set -euo pipefail
-chmod +x /*.sh
+set -euxo pipefail
+
+zip_file="$1"
+shift
 
 export MOUNT_POINT=/mnt/root
 configs_dir="/src/configs"
@@ -12,9 +14,9 @@ if [ ! -f "$config_file" ]; then
     exit 0
 fi
 
-base_img="base.img"
+base_img="${zip_file%%.*}.img"
 if [ ! -f $base_img ]; then
-    /build-basis-image.sh $base_img
+    /build-basis-image.sh "$zip_file" $base_img
 fi
 
 echo "Copying image"

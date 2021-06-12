@@ -1,14 +1,15 @@
 #!/bin/bash
 set -euxo pipefail
 
-result_image="$1"
+zip_file="$1"
+result_image="$2"
 MOUNT_POINT=/mnt/root
 
-tmp_image="$result_image"tmp.img
+zip_filename_without_extension="${zip_file%%.*}"
+rm -rf $zip_filename_without_extension.img $zip_filename_without_extension.tmp*
+unzip "$zip_file"
 
-rm -rf *raspios*.img $result_image $tmp_image
-unzip *raspios-buster-armhf*.zip
-
+tmp_image=$zip_filename_without_extension.tmp.img
 mv *raspios*.img $tmp_image
 
 qemu-img resize $tmp_image -f raw +2G
@@ -44,8 +45,6 @@ cp -r /basis-image-rootcopy/* $MOUNT_POINT
 
 chmod +x /bin/*
 cd $MOUNT_POINT
-tar xfz /src/cross-compile-output/contents.tgz || ( echo "Run cross compile before."; exit 1)
-
 chroot $MOUNT_POINT bash /var/tmp/setup.sh || (
     echo "Error: build failed, opening shell:"
     chroot $MOUNT_POINT bash
@@ -53,4 +52,4 @@ chroot $MOUNT_POINT bash /var/tmp/setup.sh || (
 
 cd /src
 /umount.sh $MOUNT_POINT
-mv $tmp_image $result_image
+mv $tmp_image $zip_filename_without_extension.img

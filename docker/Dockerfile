@@ -61,9 +61,12 @@ RUN apt-get update && \
 
 RUN wget https://github.com/Pro/raspi-toolchain/releases/latest/download/raspi-toolchain.tar.gz \
     && tar xfz raspi-toolchain.tar.gz --strip-components=1 -C /opt
-# RUN wget https://github.com/Pro/raspi-toolchain/blob/master/Toolchain-rpi.cmake
+
+RUN apt-get install -yq sudo gcc make gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu gcc-8-plugin-dev-aarch64-linux-gnu
 
 # ENV PATH=$PATH:/opt/cross-pi-gcc/bin
 COPY docker-image-copy /
+RUN chmod +x /*.sh
+
 WORKDIR "/src"
 ENTRYPOINT ["dumb-init", "bash"]
