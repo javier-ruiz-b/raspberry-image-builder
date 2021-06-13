@@ -1,18 +1,17 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 
 zip_file="$1"
 result_image="$2"
 MOUNT_POINT=/mnt/root
 
-zip_filename_without_extension="${zip_file%%.*}"
-rm -rf $zip_filename_without_extension.img $zip_filename_without_extension.tmp*
+rm -rf $result_image*
 unzip "$zip_file"
 
-tmp_image=$zip_filename_without_extension.tmp.img
+tmp_image=$result_image.tmp.img
 mv *raspios*.img $tmp_image
 
-qemu-img resize $tmp_image -f raw +2G
+qemu-img resize $tmp_image -f raw +4G
 size_img=$(parted $tmp_image -s unit MB print devices | grep $tmp_image | cut -d'(' -f 2 | sed -rn 's/([0-9]*).*/\1/p')
 size_data=100
 data_start=$((size_img - size_data))

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [ -d /etc/wireguard ]; then
+if [ -f /etc/wireguard/my_privatekey ]; then
     echo "wireguard already installed."
     exit 0
 fi 

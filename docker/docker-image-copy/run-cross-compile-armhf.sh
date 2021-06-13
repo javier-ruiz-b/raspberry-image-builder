@@ -1,12 +1,14 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 
-if [ ! -f base.img ]; then
-    /build-basis-image.sh base.img
+zip_file="$1"
+base_img="${zip_file%%.*}.img"
+if [ ! -f $base_img ]; then
+    /build-basis-image.sh "$zip_file" $base_img
 fi
 
 export RASPBIAN_ROOTFS=/mnt/root
-/mount.sh $RASPBIAN_ROOTFS base.img
+/mount.sh $RASPBIAN_ROOTFS $base_img
 export COMPILER=arm-linux-gnueabihf
 export COMPILER_PATH=/opt/cross-pi-gcc
 export PATH=$COMPILER_PATH/bin:$COMPILER_PATH/libexec/gcc/arm-linux-gnueabihf/8.3.0:$PATH

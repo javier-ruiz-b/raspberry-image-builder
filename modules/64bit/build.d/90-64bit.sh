@@ -7,4 +7,4 @@ cd /
 tar xfJ /var/tmp/contents_arm64.tar.xz
 
 # Replacing 64bit userland binaries. Do not update libraries.
-sudo apt-mark hold libraspberrypi-bin libraspberrypi-dev libraspberrypi-doc libraspberrypi0
+apt-mark hold libraspberrypi-bin libraspberrypi-dev libraspberrypi-doc libraspberrypi0
