@@ -2,13 +2,11 @@
 set -euo pipefail
 
 zip_file="$1"
-base_img="${zip_file%%.*}.img"
-if [ ! -f $base_img ]; then
-    /build-basis-image.sh "$zip_file" $base_img
-fi
+img_file=cross-compile.img
+export MOUNT_POINT=/mnt/root
+/mount-and-build-if-necessary.sh "$zip_file" "$img_file"
 
-export RASPBIAN_ROOTFS=/mnt/root
-/mount.sh $RASPBIAN_ROOTFS $base_img
+export RASPBIAN_ROOTFS=$MOUNT_POINT
 export COMPILER=arm-linux-gnueabihf
 export COMPILER_PATH=/opt/cross-pi-gcc
 export PATH=$COMPILER_PATH/bin:$COMPILER_PATH/libexec/gcc/arm-linux-gnueabihf/8.3.0:$PATH
@@ -24,7 +22,7 @@ cat $COMPILER_PATH/lib/gcc/arm-linux-gnueabihf/8.3.0/plugin/include/limitx.h \
     $COMPILER_PATH/lib/gcc/arm-linux-gnueabihf/8.3.0/plugin/include/glimits.h \
     $COMPILER_PATH/lib/gcc/arm-linux-gnueabihf/8.3.0/plugin/include/limity.h > $(dirname $($COMPILER_PATH/bin/arm-linux-gnueabihf-gcc -print-libgcc-file-name))/include-fixed/limits.h
 
-trap 'chown -R 1000:100 $DESTDIR; bash' EXIT
+trap 'chown -R 1000:100 $DESTDIR; bash; rm $img_file' EXIT
 rm -rf $DESTDIR/*
 tmpdir=$(mktemp -d)
 

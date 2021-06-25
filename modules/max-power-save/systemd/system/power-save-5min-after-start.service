@@ -1,0 +1,16 @@
+[Unit]
+Description=Power save after 5 minutes
+
+[Service]
+TimeoutStartSec=360
+Type=oneshot
+RemainAfterExit=true
+ExecStartPre=/bin/sleep 300
+ExecStartPre=/bin/wall -n "Activating power save"
+ExecStartPre=/bin/sleep 5
+ExecStart=/usr/local/bin/enable-power-save
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=sysinit.target

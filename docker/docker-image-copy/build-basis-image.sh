@@ -2,14 +2,14 @@
 set -euo pipefail
 
 zip_file="$1"
-result_image="$2"
-MOUNT_POINT=/mnt/root
 
-rm -rf $result_image*
+img_file="${zip_file%%.*}.img"
+
+rm -rf "$img_file"
 unzip "$zip_file"
 
-tmp_image=$result_image.tmp.img
-mv *raspios*.img $tmp_image
+tmp_image="$img_file.tmp.img"
+mv "$img_file" "$tmp_image"
 
 qemu-img resize $tmp_image -f raw +4G
 size_img=$(parted $tmp_image -s unit MB print devices | grep $tmp_image | cut -d'(' -f 2 | sed -rn 's/([0-9]*).*/\1/p')
@@ -38,17 +38,4 @@ e2fsck -f $data_dev
 resize2fs $data_dev
 e2label $data_dev data
 
-/mount.sh $MOUNT_POINT "$tmp_image"
-
-cp -r /basis-image-rootcopy/* $MOUNT_POINT
-
-chmod +x /bin/*
-cd $MOUNT_POINT
-chroot $MOUNT_POINT bash /var/tmp/setup.sh || (
-    echo "Error: build failed, opening shell:"
-    chroot $MOUNT_POINT bash
-)
-
-cd /src
-/umount.sh $MOUNT_POINT
-mv $tmp_image $zip_filename_without_extension.img
+mv $tmp_image $img_file

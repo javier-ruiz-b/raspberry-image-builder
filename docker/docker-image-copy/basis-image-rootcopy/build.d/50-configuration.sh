@@ -15,3 +15,4 @@ ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 
 systemctl enable ssh
 systemctl disable wpa_supplicant
+touch /boot/ssh

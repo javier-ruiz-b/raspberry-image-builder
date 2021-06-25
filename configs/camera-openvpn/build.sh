@@ -1,7 +1,7 @@
 #!/bin/bash
 add-module \
+    noip2 \
     overlayfs \
-    syncthing \
     tmate \
     watchdog-internet-connection \
     wireguard

@@ -12,18 +12,17 @@ dtparam=act_led_activelow=off
 dtparam=pwr_led_trigger=none
 dtparam=pwr_led_activelow=off
 
-start_x=1             # essential for camera
-gpu_mem=128           # at least for camera
 disable_camera_led=1
 EOF
 
 sed -i 's/dtparam=audio=on/dtparam=audio=off/g' /boot/config.txt
 
+systemctl enable power-save-5min-after-start
 
-systemctl disable apt-daily.timer
-systemctl mask apt-daily.service
-systemctl disable apt-daily-upgrade.timer
-systemctl mask apt-daily-upgrade.service
+# systemctl disable apt-daily.timer
+# systemctl mask apt-daily.service
+# systemctl disable apt-daily-upgrade.timer
+# systemctl mask apt-daily-upgrade.service
 systemctl mask apply_noobs_os_config.service
 systemctl mask fake-hwclock.service
 systemctl mask keyboard-setup.service

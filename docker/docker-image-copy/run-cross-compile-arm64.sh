@@ -2,13 +2,11 @@
 set -euo pipefail
 
 zip_file="$1"
-base_img="${zip_file%%.*}.img"
-if [ ! -f $base_img ]; then
-    /build-basis-image.sh "$zip_file" $base_img
-fi
+img_file=cross-compile.img
+export MOUNT_POINT=/mnt/root
+/mount-and-build-if-necessary.sh "$zip_file" "$img_file"
 
-export RASPBIAN_ROOTFS=/mnt/root
-/mount.sh $RASPBIAN_ROOTFS $base_img
+export RASPBIAN_ROOTFS=$MOUNT_POINT
 export COMPILER=aarch64-linux-gnu
 export COMPILER_VERSION=8
 export COMPILER_PREFIX=/usr
@@ -22,20 +20,26 @@ export PKG_CONFIG_PATH="$DESTDIR/$PREFIX/lib/pkgconfig:$DESTDIR/opt/vc/lib/pkgco
 export PKG_CONFIG_SYSROOT_DIR="${DESTDIR}"
 
 
-
 cat $COMPILER_PREFIX/lib/gcc-cross/$COMPILER/$COMPILER_VERSION/plugin/include/limitx.h \
     $COMPILER_PREFIX/lib/gcc-cross/$COMPILER/$COMPILER_VERSION/plugin/include/glimits.h \
     $COMPILER_PREFIX/lib/gcc-cross/$COMPILER/$COMPILER_VERSION/plugin/include/limity.h > $(dirname $($COMPILER_PREFIX/bin/$COMPILER-gcc -print-libgcc-file-name))/include-fixed/limits.h
 
-trap 'chown -R 1000:100 $DESTDIR; bash' EXIT
+trap 'chown -R 1000:100 $DESTDIR; bash; rm $img_file' EXIT
 rm -rf $DESTDIR/*
 tmpdir=$(mktemp -d)
 
 cd $tmpdir
 git clone https://github.com/raspberrypi/userland
 cd userland
-git checkout 6fb5973
+git config --global user.email "you@example.com"
+git config --global user.name "Your Name"
+git show f97b1af1b3e653f9da2c1a3643479bfd469e3b74 | git apply -R
+git show e31da99739927e87707b2e1bc978e75653706b9c | git apply -R
+# bash
+# git checkout 6fb5973
+# find . -name 'CMakeLists.txt' | xargs sed -i 's/NOT ARM64/ARM64/g'
 ./buildme --aarch64 $DESTDIR
+bash
 
 cd $tmpdir
 git clone --depth 1 --branch release/4.4 git://source.ffmpeg.org/ffmpeg.git
