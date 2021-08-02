@@ -1,0 +1,14 @@
+#!/bin/bash
+set -x
+
+if ip l l | grep eth0 | grep ' UP ' &> /dev/null; then
+    echo Warning: Not turning off USB because it will disconnect the ethernet conenction.
+else
+    echo Turn OFF USB chip
+    echo '1-1' | sudo tee /sys/bus/usb/drivers/usb/unbind
+fi
+
+echo Turn OFF HDMI output
+sudo /opt/vc/bin/tvservice -o
+
+echo powersave | sudo tee /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor

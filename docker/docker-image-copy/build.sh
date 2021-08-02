@@ -17,10 +17,9 @@ fi
 /mount-and-build-if-necessary.sh "$zip_file" "$config.img"
 
 bash -eux "$config_file"
+cp -r /src/modules/_common/* $MOUNT_POINT
 cp -r "$config_dir"/* $MOUNT_POINT
-cp -r /basis-image-rootcopy/* $MOUNT_POINT
-chroot $MOUNT_POINT sh -c 'chmod +x /bin/* /usr/local/bin*'
-
+chroot $MOUNT_POINT sh -c 'chmod +x /bin/* /usr/local/bin/*'
 
 chroot $MOUNT_POINT bash -eu /var/tmp/setup.sh || (
     echo "Error: build failed, opening shell:"
@@ -28,4 +27,4 @@ chroot $MOUNT_POINT bash -eu /var/tmp/setup.sh || (
 )
 
 /umount.sh $MOUNT_POINT
-echo "Success"
+echo "Finished"

@@ -35,11 +35,8 @@ git config --global user.email "you@example.com"
 git config --global user.name "Your Name"
 git show f97b1af1b3e653f9da2c1a3643479bfd469e3b74 | git apply -R
 git show e31da99739927e87707b2e1bc978e75653706b9c | git apply -R
-# bash
-# git checkout 6fb5973
-# find . -name 'CMakeLists.txt' | xargs sed -i 's/NOT ARM64/ARM64/g'
+
 ./buildme --aarch64 $DESTDIR
-bash
 
 cd $tmpdir
 git clone --depth 1 --branch release/4.4 git://source.ffmpeg.org/ffmpeg.git

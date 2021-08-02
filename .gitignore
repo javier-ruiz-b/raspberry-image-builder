@@ -1,4 +1,4 @@
-*.img
+*.img*
 *raspios*.zip
 ffmpeg.tgz
 wpa_supplicant.conf

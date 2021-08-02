@@ -33,3 +33,6 @@ systemctl disable expand-data-filesystem
 
 echo "Mounting /data back"
 mount -a
+
+echo "Enabling WiFi"
+raspi-config nonint do_wifi_country DE || true

@@ -1,10 +1,11 @@
 #!/bin/bash
 add-module \
-    64bit \
+    agent-dvr \
     camera \
     docker \
     enable-wifi \
     javier-git-projects \
+    max-power-save \
     noip2 \
     pilight \
     syncthing \

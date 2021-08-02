@@ -14,3 +14,5 @@ apt-get install -yq --no-install-recommends \
     python3-pip \
     saidar \
     vis
+    
+#avahi-autoipd not necessary

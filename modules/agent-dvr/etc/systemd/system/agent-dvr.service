@@ -1,0 +1,13 @@
+[Unit]
+Description=Agent DVR
+After=network-online.target
+
+[Service]
+User=pi
+Group=pi
+Restart=always
+ExecStart=/home/pi/dotnet/dotnet Agent.dll
+WorkingDirectory=/home/pi/agent-dvr
+
+[Install]
+WantedBy=multi-user.target
