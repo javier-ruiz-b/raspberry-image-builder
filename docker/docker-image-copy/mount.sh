@@ -14,7 +14,7 @@ data_part_start=$(fdisk -l "$image" | grep '\.img3' | awk '{print $2}')
 
 mkdir -p $mountpoint
 mount -o loop,offset=$((root_part_start*512)),sizelimit=$((root_part_size*512))  \
-    "$image" $mountpoint
+    "$image" $mountpoint || bash
     
 mkdir -p $mountpoint/boot $mountpoint/data
 mount -o loop,offset=$((boot_part_start*512)),sizelimit=$((boot_part_size*512)) \

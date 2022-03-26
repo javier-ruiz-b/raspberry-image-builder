@@ -16,9 +16,14 @@ fi
 
 /mount-and-build-if-necessary.sh "$zip_file" "$config.img"
 
+#register arm binary executor
+/etc/init.d/binfmt-support start
+
 bash -eux "$config_file"
 cp -r /src/modules/_common/* $MOUNT_POINT
 cp -r "$config_dir"/* $MOUNT_POINT
+
+
 chroot $MOUNT_POINT sh -c 'chmod +x /bin/* /usr/local/bin/*'
 
 chroot $MOUNT_POINT bash -eu /var/tmp/setup.sh || (

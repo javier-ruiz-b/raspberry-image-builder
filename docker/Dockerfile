@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 RUN apt-get update && \
     apt-get install -yq --no-install-recommends \
@@ -62,7 +62,7 @@ RUN apt-get update && \
 RUN wget https://github.com/Pro/raspi-toolchain/releases/latest/download/raspi-toolchain.tar.gz \
     && tar xfz raspi-toolchain.tar.gz --strip-components=1 -C /opt
 
-RUN apt-get install -yq sudo gcc make gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu gcc-8-plugin-dev-aarch64-linux-gnu
+RUN apt-get install -yq sudo gcc make gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu gcc-10-plugin-dev-aarch64-linux-gnu
 
 # ENV PATH=$PATH:/opt/cross-pi-gcc/bin
 COPY docker-image-copy /

@@ -13,6 +13,7 @@ apt-get install -yq --no-install-recommends \
     tmux \
     python3-pip \
     saidar \
-    vis
+    vis \
+    zstd
     
 #avahi-autoipd not necessary

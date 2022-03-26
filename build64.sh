@@ -7,5 +7,5 @@ docker run --privileged --rm -it \
     -v "$(pwd)":/src \
     -v /dev:/dev \
     rpi-image-cam \
-    /build.sh *-raspios-buster-arm64-lite.zip "$@"
+    /build.sh *-raspios-*-arm64-lite.zip "$@"
     

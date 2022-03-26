@@ -7,5 +7,5 @@ docker run --privileged --rm -it \
     -v "$(pwd)":/src \
     -v /dev:/dev \
     rpi-image-cam \
-    /run-cross-compile-arm64.sh  *-raspios-buster-arm64-lite.zip  "$@"
+    /run-cross-compile-arm64.sh  *-raspios-*-arm64-lite.zip  "$@"
     
