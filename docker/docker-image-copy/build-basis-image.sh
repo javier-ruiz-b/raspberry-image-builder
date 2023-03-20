@@ -1,15 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
-zip_file="$1"
+compressed_file="$1"
+extracted_file="$2"
 
-img_file="${zip_file%%.*}.img"
+rm -rf "$extracted_file"
 
-rm -rf "$img_file"
-unzip "$zip_file"
+case "$compressed_file" in
+*.zip)  unzip       "$compressed_file" ;;
+*.xz)   xz -d -k    "$compressed_file" ;;
+*)      echo "Unknown extension: $compressed_file"; exit 1 ;;
+esac
 
-tmp_image="$img_file.tmp.img"
-mv "$img_file" "$tmp_image"
+tmp_image="$extracted_file.tmp.img"
+mv "$extracted_file" "$tmp_image"
 
 qemu-img resize $tmp_image -f raw +4G
 size_img=$(parted $tmp_image -s unit MB print devices | grep $tmp_image | cut -d'(' -f 2 | sed -rn 's/([0-9]*).*/\1/p')
@@ -38,4 +42,4 @@ e2fsck -f $data_dev
 resize2fs $data_dev
 e2label $data_dev data
 
-mv $tmp_image $img_file
+mv $tmp_image $extracted_file

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-zip_file="$1"
+image_file="$1"
 config="$2"
 
 export MOUNT_POINT=/mnt/root
@@ -14,7 +14,7 @@ if [ ! -f "$config_file" ]; then
     exit 1
 fi
 
-/mount-and-build-if-necessary.sh "$zip_file" "$config.img"
+/mount-and-build-if-necessary.sh "$image_file" "$config.img"
 
 #register arm binary executor
 /etc/init.d/binfmt-support start
