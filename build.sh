@@ -10,5 +10,5 @@ docker run --privileged --rm -it \
     -v /dev:/dev \
     -v rpi-image-cache:/cache \
     rpi-image \
-    /build-debootstrap.sh "$@"
+    /build.sh "$@"
     
