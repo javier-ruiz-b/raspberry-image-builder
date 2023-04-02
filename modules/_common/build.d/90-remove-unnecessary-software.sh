@@ -4,6 +4,7 @@
 apt-get purge -yq \
     avahi-daemon \
     bluez \
+    console-setup \
     dphys-swapfile \
     triggerhappy \
     vim-tiny

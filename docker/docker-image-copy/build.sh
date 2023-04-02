@@ -1,10 +1,15 @@
 #!/bin/bash
 set -euxo pipefail
+#follows gist: https://gist.github.com/G-UK/ded781ea016e2c95addba2508c6bbfbe
 
-image_file="$1"
-config="$2"
+#register arm binary executor
+/etc/init.d/binfmt-support start
 
-export MOUNT_POINT=/mnt/root
+export arch="$1"
+export config="$2"
+
+trap 'chown -R 1000:1000 /output' EXIT
+
 configs_dir="/src/configs"
 config_dir="$configs_dir/${config:-}"
 config_file="$config_dir/build.sh"
@@ -14,22 +19,34 @@ if [ ! -f "$config_file" ]; then
     exit 1
 fi
 
-/mount-and-build-if-necessary.sh "$image_file" "$config.img"
+export MOUNT_POINT=/mnt/sd
+mkdir -p "$MOUNT_POINT"
+cd "$MOUNT_POINT"
 
-#register arm binary executor
-/etc/init.d/binfmt-support start
+common_scripts=/src/modules/_common
+common_cache="/cache/common_$arch.tar.zstd"
+if [ ! -f "$common_cache" ] || is-path-newer "$common_scripts/" "$common_cache"; then
+    /run-debootstrap-or-extract-from-cache.sh "$arch" "$MOUNT_POINT"
+
+    cp -r \
+        "$common_scripts/"* \
+        "$MOUNT_POINT"
+
+    /run-scripts.sh "$MOUNT_POINT"
+
+    tar -cf- . | pv | zstd -T0 -3 > "$common_cache"
+else
+    pv "$common_cache" | zstdcat - | tar -xf-
+fi
 
 bash -eux "$config_file"
-cp -r /src/modules/_common/* $MOUNT_POINT
-cp -r "$config_dir"/* $MOUNT_POINT
 
+cp -r \
+    "$config_dir"/* \
+    "$MOUNT_POINT"
 
-chroot $MOUNT_POINT sh -c 'chmod +x /bin/* /usr/local/bin/*'
+/run-scripts.sh "$MOUNT_POINT"
 
-chroot $MOUNT_POINT bash -eu /var/tmp/setup.sh || (
-    echo "Error: build failed, opening shell:"
-    chroot $MOUNT_POINT bash
-)
+/pack-to-image.sh "$MOUNT_POINT" "/output/image_${arch}_$config.img"
 
-/umount.sh $MOUNT_POINT
-echo "Finished"
+exit 0

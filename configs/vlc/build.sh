@@ -1,10 +1,7 @@
 #!/bin/bash
 add-module \
-    agent-dvr \
     enable-wifi \
     max-power-save \
-    overlayfs \
-    syncthing \
-    tmate \
+    private-config \
     watchdog-internet-connection \
     wireguard

@@ -3,3 +3,5 @@
 ffmpeg.tgz
 wpa_supplicant.conf
 cross-compile-output/
+private-config/
+output/

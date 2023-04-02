@@ -10,6 +10,7 @@ RUN apt-get update && \
         bzip2 \
         ca-certificates \
         cmake \
+        debootstrap \
         dumb-init \
         fdisk \
         file \
@@ -38,6 +39,7 @@ RUN apt-get update && \
         parted \
         patch \
         pkg-config \
+        qemu \
         qemu-user-static \
         qemu-utils \
         texinfo \
@@ -63,6 +65,11 @@ RUN wget https://github.com/Pro/raspi-toolchain/releases/latest/download/raspi-t
     && tar xfz raspi-toolchain.tar.gz --strip-components=1 -C /opt
 
 RUN apt-get install -yq sudo gcc make gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu gcc-10-plugin-dev-aarch64-linux-gnu
+
+RUN apt-get install -yq zstd pv udev dosfstools
+
+ENV DEBIAN_FRONTEND=noninteractive 
+ENV DEBCONF_NONINTERACTIVE_SEEN=true
 
 # ENV PATH=$PATH:/opt/cross-pi-gcc/bin
 COPY docker-image-copy /

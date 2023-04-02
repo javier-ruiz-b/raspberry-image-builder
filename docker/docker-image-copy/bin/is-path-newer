@@ -1,0 +1,12 @@
+#!/bin/sh
+set -x
+modified_time() {
+    if [ -d "$1" ]; then
+        file=$(find "$1" -type f -printf "%T@ %p\n" 2>/dev/null | sort -n | tail -1 | awk '{print $2}')
+        date -r "$file" +%s
+    else
+        date -r "$1" +%s
+    fi
+}
+
+test "$(modified_time "$1")" -gt "$(modified_time "$2")" && exit 0 || exit 1

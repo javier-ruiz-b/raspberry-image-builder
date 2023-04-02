@@ -9,6 +9,3 @@ for script in /build.d/*.sh; do
     bash -euxo pipefail "$script"
     mv $script /build.d/done
 done
-
-echo "df -h:"
-df -h

@@ -2,18 +2,28 @@
 set -euo pipefail
 
 apt-get update -yq 
+
 apt-get upgrade -yq 
+
 apt-get install -yq --no-install-recommends \
-    bc \
-    borgbackup \
     cockpit \
-    dos2unix \
-    git \
+    ca-certificates \
+    crda \
+    curl \
+    fake-hwclock \
+    firmware-brcm80211 \
     inotify-tools \
+    locales \
+    ntp \
+    ssh \
+    sudo \
     tmux \
-    python3-pip \
     saidar \
+    usb-modeswitch \
     vis \
-    zstd
-    
-#avahi-autoipd not necessary
+    wget \
+    wpasupplicant \
+    xz-utils \
+    zstd 
+
+    # ca-certificates crda fake-hwclock firmware-brcm80211 gnupg man-db manpages net-tools ntp usb-modeswitch ssh sudo wget xz-utils

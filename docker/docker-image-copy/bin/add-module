@@ -7,6 +7,5 @@ for module in "$@"; do
         echo "Error: module $module not found" >&2
         exit 1
     fi
-    cp -r "$module/"* $MOUNT_POINT
+    cp -r "$module/"* "$MOUNT_POINT"
 done
-chroot "$MOUNT_POINT" sh -c 'chmod 755 /usr/local/bin/*'

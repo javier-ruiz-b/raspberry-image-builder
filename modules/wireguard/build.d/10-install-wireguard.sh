@@ -6,7 +6,14 @@ if [ -f /etc/wireguard/my_privatekey ]; then
     exit 0
 fi 
 
+apt-get install -yq \
+    gcc \
+    git \
+    libc6-dev \
+    make
+
 cd /tmp
+rm -rf wireguard-tools
 git clone https://git.zx2c4.com/wireguard-tools
 make -C wireguard-tools/src -j$(nproc)
 make -C wireguard-tools/src install
