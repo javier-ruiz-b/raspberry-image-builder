@@ -11,6 +11,7 @@ RUN apt-get update && \
         ca-certificates \
         cmake \
         debootstrap \
+        dosfstools \
         dumb-init \
         fdisk \
         file \
@@ -42,12 +43,16 @@ RUN apt-get update && \
         qemu \
         qemu-user-static \
         qemu-utils \
+        sudo \
+        pv \
         texinfo \
+        udev \
         unzip \
         wget \
         xz-utils \
         zip \
-        zlib1g-dev
+        zlib1g-dev \
+        zstd
 
 
 # RUN git clone https://github.com/crosstool-ng/crosstool-ng
@@ -61,17 +66,24 @@ RUN apt-get update && \
 #     && mv /var/tmp/.config . \
 #     && /opt/cross/bin/ct-ng build
 
-RUN wget https://github.com/Pro/raspi-toolchain/releases/latest/download/raspi-toolchain.tar.gz \
-    && tar xfz raspi-toolchain.tar.gz --strip-components=1 -C /opt
+# RUN wget https://github.com/Pro/raspi-toolchain/releases/latest/download/raspi-toolchain.tar.gz \
+#     && tar xfz raspi-toolchain.tar.gz --strip-components=1 -C /opt
 
-RUN apt-get install -yq sudo gcc make gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu gcc-10-plugin-dev-aarch64-linux-gnu
+# RUN apt-get install -yq \
+#     sudo gcc make gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu gcc-10-plugin-dev-aarch64-linux-gnu
 
-RUN apt-get install -yq zstd pv udev dosfstools
 
+# ENV PATH=$PATH:/opt/cross-pi-gcc/bin
 ENV DEBIAN_FRONTEND=noninteractive 
 ENV DEBCONF_NONINTERACTIVE_SEEN=true
 
-# ENV PATH=$PATH:/opt/cross-pi-gcc/bin
+# Configure apt-cacher-ng to listen on localhost
+RUN apt-get install -yq \
+        apt-cacher-ng \
+    && sed -i 's/^# Port:.*$/Port:3142/' /etc/apt-cacher-ng/acng.conf \
+    && sed -i 's/^# BindAddress:.*$/BindAddress:127.0.0.1/' /etc/apt-cacher-ng/acng.conf \
+    && sed -i 's|^CacheDir:.*|CacheDir: /cache/apt-cacher-ng|' /etc/apt-cacher-ng/acng.conf
+
 COPY docker-image-copy /
 RUN chmod +x /*.sh
 

@@ -6,11 +6,19 @@ IMAGE_FILE="$2"
 
 cd "$MOUNT_POINT"
 
+# delete temp dirs and caches
+
+rm -rf  /var/cache/apt/* \
+        /var/lib/apt/lists/* \
+        /var/tmp/* \
+        /tmp/*
+
+
 block_size=1M
 size_os_mb=$(du --block-size $block_size -s . | awk '{print $1}')
-free_space_root_mb=256
+free_space_root_mb=128
 size_root_mb=$((size_os_mb + free_space_root_mb))
-size_boot_mb=256
+size_boot_mb=192
 
 start_offset_boot_mb=1
 start_offset_root_mb=$((start_offset_boot_mb + size_boot_mb))
@@ -42,4 +50,4 @@ cp -ra . "/mnt/image/"
 umount /mnt/image/boot
 umount /mnt/image
 
-zstd -3 -T0 --rm "$IMAGE_FILE"
+zstd -f -3 -T0 --rm "$IMAGE_FILE"

@@ -4,7 +4,8 @@ After=network-online.target
 
 [Service]
 Restart=always
-ExecStart=/usr/local/bin/watchdog-internet-connection
+ExecStart=/usr/share/watchdog-internet-connection/script
+ExecStop=/bin/sh -c 'echo "V" >> /dev/watchdog'
 
 [Install]
 WantedBy=multi-user.target

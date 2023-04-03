@@ -5,17 +5,19 @@ apt-get purge -yq \
     bluez-firmware \
     binutils-arm-linux-gnueabihf \
     gcc \
+    git \
+    make \
+    man-db \
     p7zip \
     python3 \
     "*-dev"
 
+apt-get autoremove -y
+
 rm -rf \
     /usr/lib/python*
 
-
 rm -rf \
-    /var/cache/apt/* \
-    /var/lib/apt/lists/* \
     /var/lib/doc/* \
     /usr/lib/firmware/ath10k \
     /usr/lib/firmware/ath11k \

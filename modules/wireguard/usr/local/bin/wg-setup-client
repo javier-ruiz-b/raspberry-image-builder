@@ -25,6 +25,9 @@ ask_change_value() {
 
 ask_change_value "Address" "Enter local address"
 
+if [ ! -f my_privatekey ]; then
+    wg genkey | tee my_privatekey | wg pubkey > my_publickey
+fi
 private_key=$(cat my_privatekey)
 sed -i "s#^PrivateKey.*#PrivateKey = $private_key#g" "$file"
 

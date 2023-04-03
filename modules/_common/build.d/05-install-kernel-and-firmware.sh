@@ -1,10 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
+apt-get update 
 apt-get install -yq --no-install-recommends \
     ca-certificates \
     curl \
     binutils \
+    raspberrypi-bootloader  \
+    raspberrypi-kernel \
     wget
 
 cd /usr/local/bin
@@ -13,12 +16,12 @@ chmod +x rpi-update
 
 mkdir -p /lib/modules /boot
 
-case "$arch" in
-armhf)    yes | WANT_32BIT=1 WANT_64BIT=0 WANT_PI4=0 rpi-update || true ;;
-arm64)    yes | WANT_32BIT=0 WANT_64BIT=1 WANT_PI4=1 rpi-update || true ;;
-*)        echo "arch is unknown: $arch"; exit 1 ;;
-esac
-
+# unstable?
+# case "$arch" in
+# armhf)    yes | WANT_32BIT=1 WANT_64BIT=0 WANT_PI4=0 rpi-update || true ;;
+# arm64)    yes | WANT_32BIT=0 WANT_64BIT=1 WANT_PI4=1 rpi-update || true ;;
+# *)        echo "arch is unknown: $arch"; exit 1 ;;
+# esac
 
 echo 'dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait net.ifnames=0' > /boot/cmdline.txt
 
@@ -88,7 +91,5 @@ max_framebuffers=2
 
 [all]
 #dtoverlay=vc4-fkms-v3d
-dtparam=watchdog=on
 
-dtoverlay=disable-bt
 EOF

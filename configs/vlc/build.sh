@@ -1,7 +1,9 @@
 #!/bin/bash
 add-module \
-    enable-wifi \
     max-power-save \
     private-config \
+    raspi-updater \
+    reduce-size \
+    volatile-logging \
     watchdog-internet-connection \
     wireguard

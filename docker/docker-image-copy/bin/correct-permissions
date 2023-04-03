@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+cd "$1"
+
+chmod +x bin/*
+chmod +x usr/local/bin/* 2>/dev/null || true
+chmod +x usr/share/expand-filesystem/expand-filesystem 2>/dev/null || true
+chmod 400 etc/sudoers.d/* 2>/dev/null || true

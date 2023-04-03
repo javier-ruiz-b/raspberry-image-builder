@@ -1,0 +1,72 @@
+#!/bin/bash
+set -euxo pipefail
+
+systemctl disable expand-filesystem
+
+DATA_PARTITION_FREE_SPACE_PERCENT=25
+
+disk=/dev/mmcblk0
+
+total_sectors=$(fdisk -l $disk | sed -rn "s/.*, ([0-9]+) sectors.*/\1/p")
+current_start_root_sector="$(fdisk -l "$disk" | grep "^${disk}p2" | awk '{print $2}')"
+current_end_root_sector="$(fdisk -l "$disk" | grep "^${disk}p2" | awk '{print $3}')"
+free_sectors=$((total_sectors - current_end_root_sector))
+size_data_partition=$(((DATA_PARTITION_FREE_SPACE_PERCENT * free_sectors) / 100))
+target_end_root_sector=$((total_sectors - size_data_partition - 1))
+target_start_data_sector=$((target_end_root_sector + 1))
+
+
+error() {
+    echo "$@" >&2
+    sleep 3
+    exit 1
+}
+
+echo "Performing checks before partitioning"
+
+partition_count="$(fdisk -l $disk | grep -c "^$disk")"
+if [ "$partition_count" -ne 2 ]; then
+    error "Expected 2 partitions"
+fi
+
+if [ "$target_start_data_sector" -ge "$total_sectors" ]; then
+    error "Data partition over total of sectors"
+fi
+
+if [ "$target_end_root_sector" -lt "$current_end_root_sector" ]; then
+    error "Root partition cannot be shrinked"
+fi
+
+echo Expanding $disk
+fdisk $disk<<EOF
+p
+d
+2
+n
+p
+2
+$current_start_root_sector
+$target_end_root_sector
+N
+p
+n
+p
+3
+
+
+w
+EOF
+
+partprobe $disk
+resize2fs ${disk}p2
+
+mkfs.ext4 -F -L data ${disk}p3
+mkdir -p /data
+
+echo "${disk}p3    /data           ext4    defaults,noatime  0       2" >> /etc/fstab
+
+sync
+
+
+echo "Mounting /data back"
+mount -a

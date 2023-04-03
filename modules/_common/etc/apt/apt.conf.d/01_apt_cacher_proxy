@@ -1,0 +1,2 @@
+Acquire::http::Proxy "http://127.0.0.1:3142";
+Dir::Cache::archives "/cache/apt";

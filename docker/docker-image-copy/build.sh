@@ -5,6 +5,12 @@ set -euxo pipefail
 #register arm binary executor
 /etc/init.d/binfmt-support start
 
+# Start the apt-cacher-ng service
+mkdir -p /cache/apt/partial
+mkdir -p /cache/apt-cacher-ng
+chmod 777 /cache/apt-cacher-ng
+/etc/init.d/apt-cacher-ng start
+
 export arch="$1"
 export config="$2"
 
@@ -24,17 +30,22 @@ mkdir -p "$MOUNT_POINT"
 cd "$MOUNT_POINT"
 
 common_scripts=/src/modules/_common
+common_arch_scripts=/src/modules/_arch-$arch
 common_cache="/cache/common_$arch.tar.zstd"
-if [ ! -f "$common_cache" ] || is-path-newer "$common_scripts/" "$common_cache"; then
+if [ ! -f "$common_cache" ] \
+    || is-path-newer "$common_scripts/" "$common_cache" \
+    || is-path-newer "$common_arch_scripts/" "$common_cache"; then
     /run-debootstrap-or-extract-from-cache.sh "$arch" "$MOUNT_POINT"
 
     cp -r \
         "$common_scripts/"* \
+        "$common_arch_scripts/"* \
         "$MOUNT_POINT"
 
     /run-scripts.sh "$MOUNT_POINT"
 
-    tar -cf- . | pv | zstd -T0 -3 > "$common_cache"
+    tar -cf- . | pv | zstd -T0 -3 > "$common_cache".tmp
+    mv "$common_cache".tmp "$common_cache"
 else
     pv "$common_cache" | zstdcat - | tar -xf-
 fi

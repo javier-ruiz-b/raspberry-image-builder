@@ -1,0 +1,59 @@
+#!/bin/bash
+set -eu
+
+trap 'cleanup' EXIT
+cleanup() {
+    kill "$watchdog_pid" || kill -9 "$watchdog_pid"
+    echo "V" >> /dev/watchdog
+    wall -n Watchdog disabled
+}
+
+test_time=60s
+retries=10
+current_retry=0
+
+ping_test() {
+    gateway_ip=$(ip r l | grep 'default via ' | cut -d' ' -f3)
+    if [ "$gateway_ip" = "" ] || ! ping -c 1 -W 2 "$gateway_ip" > /dev/null 2>&1; then
+        if ! ping -c 1 -W 2 1.1.1.1 > /dev/null 2>&1; then
+            echo "Could not ping $gateway_ip or 1.1.1.1"
+            return 1
+        fi
+    fi
+    return 0
+}
+
+load_ok() {
+    load_1=$(cut -d' ' -f1 < /proc/loadavg | cut -d. -f1)
+    if test "$load_1" -gt 20; then
+        echo "Load too high: $load_1"
+        return 1
+    fi
+    return 0
+}
+
+while : ; do
+    echo "."
+    sleep 7
+done >> /dev/watchdog &
+watchdog_pid=$!
+
+while true; do
+    if test $current_retry -eq $((retries/2)); then
+        wall -n "Warning: internet connection is down or load is too high. System will restart soon. Call \"systemctl disable $(basename "$0")\" to avoid this." || true
+    elif test $current_retry -eq $retries; then
+        wall -n "Warning: watchdog not triggered! System will restart in 15s. Call \"systemctl disable $(basename "$0")\" to avoid this." || true
+        kill "$watchdog_pid"
+        sleep 16s
+        wall -n "Error: system did not reboot." || true
+    fi
+
+    if ping_test && load_ok; then
+        current_retry=0
+    else
+        current_retry=$((current_retry+1))
+    fi
+
+
+    sleep $test_time
+done

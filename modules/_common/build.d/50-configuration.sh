@@ -1,16 +1,5 @@
 #!/bin/bash
 
-# disable root partition resize
-sed -i 's/ init=[^ ]*//g' /boot/cmdline.txt
-rm -f /etc/init.d/resizefs_once /etc/rc3.d/S01resizefs_once
-
-sed -i 's/relatime/noatime/g' /etc/fstab
-# echo "LABEL=data     /data    ext4   defaults,noatime,nodiratime 0 2" >> /etc/fstab
-
-# enable data partition resize
-# systemctl enable expand-data-filesystem
-
-
 # configure timezone and locale
 rm -f /etc/localtime
 ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
@@ -27,12 +16,9 @@ locales locales/default_environment_locale      select  en_US.UTF-8
 EOF
 debconf-set-selections /tmp/locales.txt
 
-
-# disable root partition resize
-sed -i 's/ init=[^ ]*//g' /boot/cmdline.txt
-rm -f /etc/init.d/resizefs_once /etc/rc3.d/S01resizefs_oncez
-
-systemctl enable ssh
+#enable services
+systemctl enable expand-filesystem \
+    ssh
 
 #hostname
 echo "$config" > /etc/hostname
@@ -58,6 +44,8 @@ chown -R pi:pi /home/pi
 echo "pi:raspberry" | chpasswd
 echo "root:raspberry" | chpasswd
 
+#disable unnecessary services
 systemctl disable \
-    apply_noobs_os_config.service \
-    dphys-swapfile.service
+    e2scrub_all \
+    e2scrub_reap \
+    apply_noobs_os_config
