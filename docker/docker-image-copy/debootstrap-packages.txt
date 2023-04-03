@@ -10,6 +10,7 @@ firmware-brcm80211
 inotify-tools
 locales
 ntp
+parted
 ssh
 sudo
 tmux

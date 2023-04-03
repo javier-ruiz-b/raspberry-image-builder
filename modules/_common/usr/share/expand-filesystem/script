@@ -38,7 +38,7 @@ if [ "$target_end_root_sector" -lt "$current_end_root_sector" ]; then
 fi
 
 echo Expanding $disk
-fdisk $disk<<EOF
+fdisk $disk<<EOF || true
 p
 d
 2
@@ -57,7 +57,13 @@ p
 w
 EOF
 
-partprobe $disk
+for _ in $(seq 1 10); do
+    if partprobe $disk; then
+        break
+    fi
+    sleep 2
+done
+
 resize2fs ${disk}p2
 
 mkfs.ext4 -F -L data ${disk}p3
@@ -66,7 +72,6 @@ mkdir -p /data
 echo "${disk}p3    /data           ext4    defaults,noatime  0       2" >> /etc/fstab
 
 sync
-
 
 echo "Mounting /data back"
 mount -a

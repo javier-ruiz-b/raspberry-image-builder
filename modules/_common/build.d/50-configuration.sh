@@ -20,6 +20,9 @@ debconf-set-selections /tmp/locales.txt
 systemctl enable expand-filesystem \
     ssh
 
+
+chmod +x /usr/share/expand-filesystem/script
+
 #hostname
 echo "$config" > /etc/hostname
 

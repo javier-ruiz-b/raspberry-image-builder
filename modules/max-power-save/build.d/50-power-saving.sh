@@ -17,15 +17,9 @@ EOF
 
 sed -i 's/dtparam=audio=on/dtparam=audio=off/g' /boot/config.txt
 
-systemctl enable power-save-5min-after-start
+systemctl enable power-save.timer
 
 # systemctl disable apt-daily.timer
 # systemctl mask apt-daily.service
 # systemctl disable apt-daily-upgrade.timer
 # systemctl mask apt-daily-upgrade.service
-systemctl mask apply_noobs_os_config.service
-systemctl mask fake-hwclock.service
-systemctl mask keyboard-setup.service
-systemctl mask dphys-swapfile.service
-
-# sed 's#Exec=.*$#Exec=/bin/false#g' /usr/share/dbus-1/system-services/org.freedesktop.PolicyKit1.service

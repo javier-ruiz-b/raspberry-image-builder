@@ -1,0 +1,9 @@
+[Unit]
+Description=Delay start of power-save by 5min
+
+[Timer]
+OnBootSec=5min
+Unit=power-save.service
+
+[Install]
+WantedBy=timers.target

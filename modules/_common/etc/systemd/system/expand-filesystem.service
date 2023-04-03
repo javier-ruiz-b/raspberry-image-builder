@@ -1,11 +1,10 @@
 [Unit]
 Description=Expand filesystem
-Before=sysinit.target
 
 [Service]
 Type=oneshot
 RemainAfterExit=true
-ExecStart=/usr/share/expand-filesystem/expand-filesystem
+ExecStart=/usr/share/expand-filesystem/script
 StandardOutput=journal+console
 StandardError=journal+console
 

@@ -1,12 +1,11 @@
 [Unit]
-Description=Power save after 5 minutes
+Description=Enable power save
 
 [Service]
-TimeoutStartSec=360
+TimeoutStartSec=60
 Type=oneshot
 RemainAfterExit=true
-ExecStartPre=/bin/sleep 300
-ExecStartPre=/bin/wall -n "power-save-5min-after-start.service: Activating power save in 30s"
+ExecStartPre=/bin/wall -n "power-save.service: Activating power save in 30s"
 ExecStartPre=/bin/sleep 30
 ExecStart=/usr/local/bin/enable-power-save
 StandardOutput=journal+console
