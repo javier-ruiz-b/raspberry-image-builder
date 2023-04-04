@@ -7,6 +7,7 @@ if [ -f /etc/wireguard/my_privatekey ]; then
 fi 
 
 apt-get install -yq \
+    iptables \
     wireguard-tools
 
 echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf

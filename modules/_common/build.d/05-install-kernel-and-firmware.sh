@@ -6,6 +6,7 @@ apt-get install -yq --no-install-recommends \
     ca-certificates \
     curl \
     binutils \
+    libraspberrypi-bin \
     raspberrypi-bootloader  \
     raspberrypi-kernel \
     wget
