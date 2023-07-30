@@ -1,7 +1,7 @@
 FROM debian:bullseye-slim
 
 RUN apt-get update && \
-    apt-get install -yq --no-install-recommends \
+    apt-get install -y --no-install-recommends \
         autoconf \
         automake \
         binfmt-support \

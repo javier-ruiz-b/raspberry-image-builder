@@ -18,7 +18,7 @@ block_size=1M
 size_os_mb=$(du --block-size $block_size -s . | awk '{print $1}')
 free_space_root_mb=128
 size_root_mb=$((size_os_mb + free_space_root_mb))
-size_boot_mb=192
+size_boot_mb=256
 
 start_offset_boot_mb=1
 start_offset_root_mb=$((start_offset_boot_mb + size_boot_mb))

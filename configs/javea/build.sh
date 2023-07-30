@@ -1,9 +1,8 @@
 #!/bin/bash
 add-module \
-    agent-dvr \
-    initramfs-recovery \
+    docker \
+    frigate \
     overlayfs \
     syncthing \
-    tmate \
     watchdog-internet-connection \
     wireguard

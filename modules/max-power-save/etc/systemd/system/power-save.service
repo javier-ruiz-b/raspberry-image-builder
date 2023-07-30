@@ -2,11 +2,11 @@
 Description=Enable power save
 
 [Service]
-TimeoutStartSec=60
+TimeoutStartSec=120
 Type=oneshot
 RemainAfterExit=true
-ExecStartPre=/bin/wall -n "power-save.service: Activating power save in 30s"
-ExecStartPre=/bin/sleep 30
+ExecStartPre=/bin/wall -n "power-save.service: Activating power save in 90s"
+ExecStartPre=/bin/sleep 90
 ExecStart=/usr/local/bin/enable-power-save
 StandardOutput=journal+console
 StandardError=journal+console

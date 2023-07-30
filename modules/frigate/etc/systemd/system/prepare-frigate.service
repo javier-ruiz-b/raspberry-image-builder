@@ -1,0 +1,11 @@
+[Unit]
+Description=Prepare frigate
+Before=docker-compose@docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/usr/share/frigate/prepare-frigate.sh
+
+[Install]
+WantedBy=multi-user.target
