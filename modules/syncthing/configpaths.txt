@@ -1,0 +1,6 @@
+home/*/.config/syncthing/*.xml
+home/*/.config/syncthing/*.pem
+home/*/.config/syncthing/*.txt
+root/.config/syncthing/*.xml
+root/.config/syncthing/*.pem
+root/.config/syncthing/*.txt

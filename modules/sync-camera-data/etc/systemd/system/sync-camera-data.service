@@ -1,0 +1,8 @@
+[Unit]
+Description=Sync camera data
+
+[Service]
+ExecStart=/usr/local/bin/sync-camera-data
+
+[Install]
+WantedBy=multi-user.target

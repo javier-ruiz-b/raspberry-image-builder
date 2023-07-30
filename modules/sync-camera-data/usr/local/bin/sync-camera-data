@@ -1,0 +1,20 @@
+#!/bin/bash
+set -euxo pipefail
+
+src=/media/usb-nextcloud
+destination=/media/usb-backup/syncthing/archived-camera-data
+
+remove_older_than_min=$((2*24*60))
+copy_older_than_min=2
+
+while true; do
+    inotifywait -r -e close_write,close_nowrite --exclude '.tmp$' $src/*-cameras
+    sleep 5s
+    for location in javea berlin; do
+        find $src/$location-cameras/ -mmin +$remove_older_than_min -type f -print0 | sudo rsync -av --remove-source-files --files-from=- --from0 / $destination/
+        find $src/$location-cameras/ -mmin +$copy_older_than_min   -type f -print0 | sudo rsync -av --files-from=- --from0 / $destination/
+        sudo chown -R syncthing:syncthing $destination
+    done
+done
+
+

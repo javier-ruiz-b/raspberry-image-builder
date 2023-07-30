@@ -1,0 +1,12 @@
+[Unit]
+Description=Home Assistant
+After=docker.service network-online.target
+Requires=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/share/home-assistant/start
+ExecStop=/usr/bin/docker stop -t1 home-assistant
+
+[Install]
+WantedBy=multi-user.target

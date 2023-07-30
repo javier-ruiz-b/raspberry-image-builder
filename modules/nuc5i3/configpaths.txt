@@ -1,0 +1,4 @@
+usr/local/bin/borg*
+usr/local/bin/decrypt-and-*
+usr/local/bin/renew-certificate-treso-info
+usr/local/bin/sync-camera-data

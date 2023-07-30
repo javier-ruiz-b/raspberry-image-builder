@@ -1,0 +1,13 @@
+#!/bin/bash
+set -euo pipefail
+
+mkdir -p /data/homeassistant
+
+docker run \
+  --name homeassistant \
+  --privileged \
+  --restart=unless-stopped \
+  -e TZ=Europe/Madrid \
+  -v /data/homeassistant:/config \
+  --network=host \
+  ghcr.io/home-assistant/home-assistant:stable

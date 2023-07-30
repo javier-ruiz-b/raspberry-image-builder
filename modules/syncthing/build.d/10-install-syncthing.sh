@@ -5,4 +5,10 @@ printf "Package: *\nPin: origin apt.syncthing.net\nPin-Priority: 990\n" | tee /e
 
 apt-get update
 apt-get install -yq syncthing
+
+# allow setting owner and mode
+sed 's/^#AmbientCapabilities/AmbientCapabilities/g' /lib/systemd/system/syncthing\@.service  > /etc/systemd/system/syncthing\@.service
+
+systemctl daemon-reload
+
 systemctl enable syncthing@pi.service

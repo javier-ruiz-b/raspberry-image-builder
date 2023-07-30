@@ -1,0 +1,1 @@
+data/frigate/config.yml
